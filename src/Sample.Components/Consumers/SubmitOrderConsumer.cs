@@ -25,6 +25,13 @@ public class SubmitOrderConsumer(ILogger<SubmitOrderConsumer> logger) :
             return;
         }
 
+        await context.Publish<IOrderSubmitted>(new
+        {
+            OrderId = context.Message.OrderId,
+            CustomerNumber = context.Message.CustomerNumber,
+            InVar.Timestamp
+        });
+
         if (context.RequestId != null)
         {
             await context.RespondAsync<IOrderSubmitionAccepted>(new

@@ -16,13 +16,9 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddMassTransit(cfg =>
         {
-                // cfg.UsingRabbitMq((context, config) =>
-                // {
-                //     config.ConfigureEndpoints(context);
-                // });
-                
-                cfg.UsingRabbitMq();
-                cfg.AddRequestClient<ISubmitOrder>(new Uri($"exchange:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
+            cfg.UsingRabbitMq();
+            cfg.AddRequestClient<ISubmitOrder>(new Uri($"exchange:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
+            cfg.AddRequestClient<ICheckOrder>();
         });
 
         var app = builder.Build();

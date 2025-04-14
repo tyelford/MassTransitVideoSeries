@@ -4,6 +4,7 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Sample.Components.StateMachines;
 using Sample.Service.Services;
 
 namespace Sample.Service;
@@ -44,6 +45,10 @@ class Program
                 {
                     cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
                     cfg.AddRequestClient<ISubmitOrder>();
+
+                    cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                        .RedisRepository();
+                    
                     cfg.UsingRabbitMq((ctx, hostConfig) =>
                     {
                         hostConfig.ConfigureEndpoints(ctx);

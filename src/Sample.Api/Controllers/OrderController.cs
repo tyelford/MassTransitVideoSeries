@@ -11,12 +11,24 @@ public class OrderController(
     ILogger<OrderController> _logger
     ,IRequestClient<ISubmitOrder> _submitOrderRequestClient
     ,ISendEndpointProvider _sendEndpointProvider
+    ,IRequestClient<ICheckOrder> _checkOrderRequestClient
     ) :ControllerBase
 {
     [HttpGet]
-    public string Get()
+    public async Task<IActionResult> Get(Guid id)
     {
-        return "Hello From OrderController!";
+        var (status, notFound) = await _checkOrderRequestClient.GetResponse<IOrderStatus, IOrderNotFound>(new
+        {
+            OrderId = id
+        });
+
+        if (status.IsCompletedSuccessfully)
+        {
+            var response = await status;
+            return Ok(response.Message);
+        }
+        var notFoundResponse = await notFound;
+        return NotFound(notFoundResponse.Message);
     }
     
     
