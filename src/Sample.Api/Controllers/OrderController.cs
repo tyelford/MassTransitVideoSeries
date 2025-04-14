@@ -1,5 +1,6 @@
 using Sample.Contracts;
 using MassTransit;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Sample.Api.Controllers;
@@ -9,6 +10,7 @@ namespace Sample.Api.Controllers;
 public class OrderController(
     ILogger<OrderController> _logger
     ,IRequestClient<ISubmitOrder> _submitOrderRequestClient
+    ,ISendEndpointProvider _sendEndpointProvider
     ) :ControllerBase
 {
     [HttpGet]
@@ -16,7 +18,8 @@ public class OrderController(
     {
         return "Hello From OrderController!";
     }
-
+    
+    
     [HttpPost]
     public async Task<IActionResult> Post(Guid id, string customerNumber)
     {
@@ -37,5 +40,21 @@ public class OrderController(
             var res = await rejected;
             return BadRequest(res.Message);
         }
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> Put(Guid id, string customerNumber)
+    {
+        var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("exchange:submit-order"));
+
+        await endpoint.Send<ISubmitOrder>(new
+        {
+            OrderId = id,
+            Timestamp = InVar.Timestamp,
+            CustomerNumber = customerNumber
+        });
+        
+       
+        return Accepted();
     }
 }

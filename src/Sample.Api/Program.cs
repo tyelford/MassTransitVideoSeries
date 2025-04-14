@@ -1,5 +1,6 @@
 using Sample.Contracts;
 using MassTransit;
+using Sample.Components.Consumers;
 
 namespace Sample.Api;
 
@@ -21,7 +22,7 @@ public class Program
                 // });
                 
                 cfg.UsingRabbitMq();
-                cfg.AddRequestClient<ISubmitOrder>();
+                cfg.AddRequestClient<ISubmitOrder>(new Uri($"exchange:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
         });
 
         var app = builder.Build();
