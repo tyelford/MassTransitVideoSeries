@@ -46,7 +46,7 @@ class Program
                     cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
                     cfg.AddRequestClient<ISubmitOrder>();
 
-                    cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                    cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
                         .RedisRepository();
                     
                     cfg.UsingRabbitMq((ctx, hostConfig) =>
